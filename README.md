@@ -13,6 +13,9 @@ url: 'mysql://password:username@localhost:port/db-name',
 
 Serve with `sails lift` it will run on default [localhost:1337](http://localhost:1337). 
 
+## Debug
+Run `sails inspect` and use chrome devtool to inspect cod
+
 ### Links
 
 + [Sails framework documentation](https://sailsjs.com/get-started)

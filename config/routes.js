@@ -9,6 +9,10 @@
  */
 
 module.exports.routes = {
+  'GET /authorize': 'AuthController.authorize',
+  'GET /redirect': 'AuthController.redirect',
+  'GET /access-token': 'AuthController.accessToken',
 
-
+  'GET /share': 'MainController.share',
+  'GET /play': 'MainController.play',
 };
