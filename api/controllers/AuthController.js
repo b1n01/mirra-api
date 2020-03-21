@@ -20,7 +20,7 @@ module.exports = {
   authorize: function (req, res) {
     let clientId = sails.config.custom.spotifyClientId;
     let scope = 'streaming,user-read-email,user-read-private' // to create device with Web Playback SDK
-      //+',user-read-playback-state' // to check if user is listening
+      +',user-read-playback-state' // to check if user is listening
       +',user-modify-playback-state' // to play songs
       +',user-read-recently-played'; // to get last played songs
     let redirectUri = sails.config.custom.serverHost + '/redirect';
@@ -66,76 +66,69 @@ module.exports = {
 
     // With the 'code' ask form the 'access token' and 'refresh token'
     axios.post(tokenUri, bodyParam, options)
-    .then(async response => {
-      let accessToken = response.data.access_token;
-      let expiresIn = response.data.expires_in;
-      let expiresAt = Date.now() + (expiresIn * 1000);
-      let refreshToken = response.data.refresh_token;
-
-      let getUserInfoUrl = 'https://api.spotify.com/v1/me';
-      let options = { headers: {
-        Authorization: 'Bearer ' + accessToken,
-      }};
-
-      // With the 'access token' ask for user info
-      axios.get(getUserInfoUrl, options)
       .then(async response => {
-        let spotifyId = response.data.id;
-        let user = await User.findOne({
-          spotifyId: spotifyId,
-        });
+        let accessToken = response.data.access_token;
+        let expiresIn = response.data.expires_in;
+        let expiresAt = Date.now() + (expiresIn * 1000);
+        let refreshToken = response.data.refresh_token;
 
-        if(!user) {
-          // Create new user
-          let userKey = crypto.createHash('md5').update(spotifyId).digest('hex');
+        let getUserInfoUrl = 'https://api.spotify.com/v1/me';
+        let options = { headers: {
+          Authorization: 'Bearer ' + accessToken,
+        }};
 
-          user = await User.create({
-            spotifyId: spotifyId,
-            key: userKey,
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            expiresAt: expiresAt,
-          }).fetch();
-        } else {
-          // Update existing user
-          user = await User.updateOne({id: user.id}).set({
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            expiresAt: expiresAt,
+        // With the 'access token' ask for user info
+        axios.get(getUserInfoUrl, options)
+          .then(async response => {
+            let spotifyId = response.data.id;
+            let user = await User.findOne({
+              spotifyId: spotifyId,
+            });
+
+            if(!user) {
+              // Create new user
+              let userKey = crypto.createHash('md5').update(spotifyId).digest('hex');
+
+              user = await User.create({
+                spotifyId: spotifyId,
+                key: userKey,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresAt: expiresAt,
+              }).fetch();
+            } else {
+              // Update existing user
+              user = await User.updateOne({id: user.id}).set({
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresAt: expiresAt,
+              });
+            }
+
+            let jwtToken = jwt.sign({userId: user.id}, sails.config.custom.secret);
+            return res.cookie('jwt', jwtToken).redirect(sails.config.custom.appHost);
+          })
+          .catch(() => {
+            let message = 'Something went wrong, cannot found the user on remote server';
+            return res.status(500).send({message: message});
           });
-        }
 
-        let jwtToken = jwt.sign({userId: user.id}, sails.config.custom.secret);
-        return res.cookie('jwt', jwtToken)
-          .redirect(sails.config.custom.appHost);
-
-      }).catch(err => {
-        sails.log('Error', err);
-        return res.json({
-          message: 'Something went wrong, cannot found the user on remote server',
-          error: err.message
-        }, 500);
+      })
+      .catch(() => {
+        let message = 'Something went wrong, cannot get access token from';
+        return res.status(500).send({message: message});
       });
-
-    }).catch(err => {
-      sails.log('Error', err);
-      return res.json({
-        message: 'Something went wrong, cannot get access token from',
-        error: err.message
-      }, 500);
-    });
   },
 
   /**
-   * Get user access token
+   * Get a valid user access token
+   *
    * @param {*} req
    * @param {*} res
    */
-  accessToken: function(req, res) {
-    if(req.user.expiresAt > Date.now()) {
-      // refresh access token
-    }
-
-    return res.send({'access_token': req.user.accessToken});
+  accessToken: async function(req, res) {
+    sails.helpers.getValidToken.with({user: req.user})
+      .then(user => res.send({'access_token': user.accessToken}))
+      .catch(err => res.status(500).send({'error': err.message}));
   },
 };
