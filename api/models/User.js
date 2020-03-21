@@ -15,4 +15,3 @@ module.exports = {
     expiresAt: { type: 'string' },
   },
 };
-

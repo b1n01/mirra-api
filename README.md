@@ -13,8 +13,12 @@ url: 'mysql://password:username@localhost:port/db-name',
 
 Serve with `sails lift` it will run on default [localhost:1337](http://localhost:1337). 
 
+## Watch 
+
+To livereload the server use `forever -w app.js`
+
 ## Debug
-Run `sails inspect` and use chrome devtool to inspect cod
+Run `sails inspect` and use chrome devtool to inspect code
 
 ### Links
 
