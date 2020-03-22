@@ -106,7 +106,18 @@ module.exports = {
                 axios.put(playUri, config, options)
                   .then(() => {
                     let profilePicUrl = userProfile.data.images.lenght ? userProfile.data.images.slice(-1).pop().url : null;
-                    return res.json({name: userProfile.data.display_name, 'profile_pic_url': profilePicUrl});
+                    return res.json({
+                      user: {
+                        name: userProfile.data.display_name,
+                        'profile_pic_url': profilePicUrl,
+                      },
+                      track: {
+                        name: response.data.item.name,
+                        album: response.data.item.album.name,
+                        artists: response.data.item.artists.map(artist => artist.name).join(', '),
+                        image: response.data.item.album.images[0].url,
+                      }
+                    });
                   })
                   .catch(err => {
                     let message = 'Something went wrong, cannot play the song, is Mirra Web Player running?';

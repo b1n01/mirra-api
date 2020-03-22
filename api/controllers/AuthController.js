@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+const shortid = require('shortid');
 
 module.exports = {
 
@@ -87,7 +87,7 @@ module.exports = {
 
             if(!user) {
               // Create new user
-              let userKey = crypto.createHash('md5').update(spotifyId).digest('hex');
+              let userKey = shortid.generate();
 
               user = await User.create({
                 spotifyId: spotifyId,
