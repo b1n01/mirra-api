@@ -106,7 +106,7 @@ module.exports = {
             }
 
             let jwtToken = jwt.sign({userId: user.id}, sails.config.custom.secret);
-            return res.cookie('jwt', jwtToken).redirect(sails.config.custom.appHost + '/authenticated');
+            return res.cookie('jwt', jwtToken).redirect(sails.config.custom.appHost + '/auth');
           })
           .catch(() => {
             let message = 'Something went wrong, cannot found the user on remote server';

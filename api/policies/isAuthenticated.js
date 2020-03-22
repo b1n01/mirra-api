@@ -8,19 +8,19 @@ module.exports = function(req, res, next) {
   var token = req.headers['authorization'];
 
   if(!token) {
-    return res.json({message: 'Missing token'}).status(401);
+    return res.status(401).send({message: 'Missing token'});
   }
 
   token = token.split(' ')[1];
 
   jwt.verify(token, sails.config.custom.secret, {}, (err, data) => {
     if(err) {
-      return res.json({message: 'Wrong token'}).status(401);
+      return res.status(401).send({message: 'Wrong token'});
     }
 
     sails.models.user.findOne({id: data.userId}, (err, user) => {
-      if(err) {
-        return res.json({message: 'User not found'}).status(404);
+      if(err || !user) {
+        return res.status(401).send({message: 'User not found'});
       }
 
       req.user = user;

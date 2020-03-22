@@ -9,7 +9,7 @@ module.exports = {
   attributes: {
     key: { type: 'string', required: true },
     spotifyId: { type: 'string', allowNull: true },
-    public: { type: 'boolean', defaultsTo: false },
+    public: { type: 'boolean', defaultsTo: true },
     accessToken: { type: 'string' },
     refreshToken: { type: 'string' },
     expiresAt: { type: 'string' },

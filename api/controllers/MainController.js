@@ -15,8 +15,7 @@ module.exports = {
    * @param {*} res
    */
   userKey: function(req, res) {
-    let key = req.user.public ? req.user.key : null;
-    return res.send({key: key});
+    return res.send({key: req.user.key , isPublic: req.user.public});
   },
 
   /**
@@ -29,7 +28,7 @@ module.exports = {
     User.updateOne({id: req.user.id})
       .set({public: true})
       .then(user => {
-        return res.send({'key': user.key});
+        return res.send({key: user.key, isPublic: user.public});
       });
   },
 
@@ -58,14 +57,14 @@ module.exports = {
     let deviceId = req.param('device_id', null);
 
     if(!userKey || !deviceId) {
-      return res.status(401).send({message: 'Wrong parameters'});
+      return res.status(400).send({message: 'Wrong parameters'});
     }
 
     // Find user by key
     User.findOne({key: userKey})
       .then(async targetUser =>  {
         if(!targetUser) {
-          return res.status(401).json({message: 'User not found'});
+          return res.status(404).json({message: 'User not found'});
         }
 
         // Ensure fresh token
