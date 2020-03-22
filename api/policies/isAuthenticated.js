@@ -11,7 +11,7 @@ module.exports = function(req, res, next) {
     return res.json({message: 'Missing token'}).status(401);
   }
 
-  token = token.split(': ')[1];
+  token = token.split(' ')[1];
 
   jwt.verify(token, sails.config.custom.secret, {}, (err, data) => {
     if(err) {
