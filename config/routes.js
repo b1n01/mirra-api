@@ -13,6 +13,8 @@ module.exports.routes = {
   'GET /redirect': 'AuthController.redirect',
   'GET /access-token': 'AuthController.accessToken',
 
+  'GET /user-key': 'MainController.userKey',
   'GET /share': 'MainController.share',
+  'GET /unshare': 'MainController.unshare',
   'GET /play': 'MainController.play',
 };

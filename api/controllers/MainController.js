@@ -9,6 +9,17 @@ const axios = require('axios');
 
 module.exports = {
   /**
+   * Get share key if user is public
+   *
+   * @param {*} req
+   * @param {*} res
+   */
+  userKey: function(req, res) {
+    let key = req.user.public ? req.user.key : null;
+    return res.send({key: key});
+  },
+
+  /**
    * Start sharing your account
    *
    * @param {*} req
