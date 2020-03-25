@@ -15,7 +15,8 @@ module.exports = {
    * @param {*} res
    */
   userKey: function(req, res) {
-    return res.send({key: req.user.key , isPublic: req.user.public});
+    let key = req.user.public ? req.user.key : null;
+    return res.send({key: key});
   },
 
   /**
@@ -28,7 +29,7 @@ module.exports = {
     User.updateOne({id: req.user.id})
       .set({public: true})
       .then(user => {
-        return res.send({key: user.key, isPublic: user.public});
+        return res.send({key: user.key});
       });
   },
 
@@ -80,10 +81,7 @@ module.exports = {
         axios.get(getCurrentlyPlayingUrl, options)
           .then(response => {
             if(!response.data) {
-              return res.status(412).send({
-                message: 'Something went wrong, cannot get currently playing song',
-                type: 'USER_NOT_ONLINE'
-              });
+              return res.status(412).send({type: 'USER_NOT_ONLINE'});
             }
 
             let getUserProfileUrl = 'https://api.spotify.com/v1/me';
@@ -94,6 +92,7 @@ module.exports = {
             // Get target user profile
             axios.get(getUserProfileUrl, options)
               .then((userProfile) => {
+                sails.log(userProfile.data.images)
                 let songUri = response.data.item.uri;
                 let playUri = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
                 let config = JSON.stringify({uris: [songUri]});
@@ -104,7 +103,7 @@ module.exports = {
                 // Play song for logged user on given device id
                 axios.put(playUri, config, options)
                   .then(() => {
-                    let profilePicUrl = userProfile.data.images.lenght ? userProfile.data.images.slice(-1).pop().url : null;
+                    let profilePicUrl = userProfile.data.images.length ? userProfile.data.images.slice(-1).pop().url : null;
                     return res.json({
                       user: {
                         name: userProfile.data.display_name,
@@ -119,8 +118,12 @@ module.exports = {
                     });
                   })
                   .catch(err => {
-                    let message = 'Something went wrong, cannot play the song, is Mirra Web Player running?';
-                    return res.status(500).send({message: message, error: err.response.statusText});
+                    if(err.response.data.error.reason === 'PREMIUM_REQUIRED') {
+                      return res.status(412).send({type: 'PREMIUM_REQUIRED'});
+                    } else {
+                      let message = 'Something went wrong, cannot play the song, is Mirra Web Player running?';
+                      return res.status(500).send({message: message, error: err.response.statusText});
+                    }
                   });
               })
               .catch(err => {
