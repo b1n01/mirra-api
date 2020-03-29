@@ -68,6 +68,12 @@ module.exports = {
           return res.status(404).json({message: 'User not found'});
         }
 
+        if(!targetUser.public) {
+          return res.status(412).send({
+            type: 'USER_IS_PRIVATE',
+          });
+        }
+
         // Ensure fresh token
         targetUser = await sails.helpers.getValidToken.with({user: targetUser});
         loggedUser = await sails.helpers.getValidToken.with({user: req.user});
