@@ -15,7 +15,7 @@ Serve with `sails lift` it will run on default [localhost:1337](http://localhost
 
 ## Watch 
 
-To livereload the server use `forever -w app.js`
+To livereload the server use `forever -w app.js` (you need DB to run app)
 
 ## Debug
 Run `sails inspect` and use chrome devtool to inspect code
