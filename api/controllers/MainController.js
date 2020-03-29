@@ -15,8 +15,7 @@ module.exports = {
    * @param {*} res
    */
   userKey: function(req, res) {
-    let key = req.user.public ? req.user.key : null;
-    return res.send({key: key});
+    return res.send({key: req.user.key, isPublic: req.user.public});
   },
 
   /**
@@ -98,7 +97,6 @@ module.exports = {
             // Get target user profile
             axios.get(getUserProfileUrl, options)
               .then((userProfile) => {
-                sails.log(userProfile.data.images)
                 let songUri = response.data.item.uri;
                 let playUri = `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`;
                 let config = JSON.stringify({uris: [songUri]});
@@ -110,10 +108,12 @@ module.exports = {
                 axios.put(playUri, config, options)
                   .then(() => {
                     let profilePicUrl = userProfile.data.images.length ? userProfile.data.images.slice(-1).pop().url : null;
+                    let isYou = targetUser.id === req.user.id;
                     return res.json({
                       user: {
                         name: userProfile.data.display_name,
-                        'profile_pic_url': profilePicUrl,
+                        profilePic: profilePicUrl,
+                        isYou: isYou,
                       },
                       track: {
                         name: response.data.item.name,
