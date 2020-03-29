@@ -12,6 +12,7 @@ module.exports.routes = {
   'GET /authorize': 'AuthController.authorize',
   'GET /redirect': 'AuthController.redirect',
   'GET /access-token': 'AuthController.accessToken',
+  'DELETE /account': 'AuthController.delete',
 
   'GET /user-key': 'MainController.userKey',
   'GET /share': 'MainController.share',

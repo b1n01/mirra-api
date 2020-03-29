@@ -131,4 +131,15 @@ module.exports = {
       .then(user => res.send({'access_token': user.accessToken}))
       .catch(err => res.status(500).send({'error': err.message}));
   },
+
+  /**
+   * Delete User account
+   * 
+   * @param {*} req
+   * @param {*} res
+   */
+  delete: async function(req, res) {
+    await User.destroyOne({id: req.user.id});
+    res.json({message: 'ok'});
+  }
 };
