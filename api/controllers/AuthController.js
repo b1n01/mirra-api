@@ -55,7 +55,7 @@ module.exports = {
     let clientId = sails.config.custom.spotifyClientId;
     let clientSecret = sails.config.custom.spotifyClientSecret;
     let tokenUri = 'https://accounts.spotify.com/api/token';
-    let redirectUri = 'http://localhost:1337/redirect';
+    let redirectUri = sails.config.custom.serverHost + '/redirect';
 
     let authToken =  Buffer.from(clientId + ':' + clientSecret).toString('base64');
     let bodyParam = `grant_type=authorization_code&redirect_uri=${redirectUri}&code=${code}`;
