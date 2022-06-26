@@ -27,8 +27,3 @@ Run `sails inspect` and use chrome devtool to inspect code
 + [Deployment tips](https://sailsjs.com/documentation/concepts/deployment)
 + [Community support options](https://sailsjs.com/support)
 + [Professional / enterprise options](https://sailsjs.com/enterprise)
-
-
-### Version info
-
-This app was originally generated on Thu Mar 19 2020 10:22:55 GMT+0100 (GMT+01:00) using Sails v1.2.3.
