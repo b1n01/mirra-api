@@ -28,4 +28,8 @@ It is developed using [SailsJS](https://sailsjs.com).
 
 ## App
 
-There is a client using this api, chck it out [here](https://github.com/b1n01/mirra-app)
+There is a client using this api, check it out [here](https://github.com/b1n01/mirra-app)
+
+## Note
+
+This is just a proof of concept, development has been stopped for many years now.
